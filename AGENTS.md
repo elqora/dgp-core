@@ -24,5 +24,5 @@ This repository is the framework-neutral product-definition interpreter. Its beh
 
 - Legacy core source: `D:\Projects\GitHub\digital-service-ui-builder\src\core` and related framework-neutral utilities. Extract only interpretation behavior that belongs to Core.
 - Backend authority: sibling `../dgp-sdk` at `D:\Projects\GitHub\elqora\digital-goods-protocol\dgp-sdk`.
-- Current Studio reference: `D:\Projects\GitHub\service-builder`.
-- Sibling repositories: `../dgp-spec`, `../dgp-validation`, `../dgp-ordering`, and `../dgp-workspace`.
+- Studio destination: sibling `../dgp-studio`; code and history migration source: `D:\Projects\GitHub\service-builder`.
+- Sibling repositories: `../dgp-spec`, `../dgp-validation`, `../dgp-ordering`, `../dgp-workspace`, and `../dgp-studio`.
