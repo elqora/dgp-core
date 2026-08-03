@@ -4,25 +4,35 @@ Read and follow `../AGENTS.md` before working in this repository.
 
 ## Role
 
-This repository is the framework-neutral product-definition interpreter. Its behavior must be deterministic and portable across UI and server-adjacent consumers.
+This repository is the deterministic, framework-neutral interpreter for canonical DGP `ProductDefinition` documents. It resolves and queries context, visibility, relationships, service bindings, capabilities, option effects, and fallback behavior.
 
 ## Dependencies
 
-- May depend on sibling `dgp-spec`.
-- Must not depend on `dgp-validation`, `dgp-ordering`, `dgp-ordering-form-palette`, `dgp-workspace`, Form Palette, React, React Flow, Studio, or a host application.
+- May depend on sibling `dgp-spec` only.
+- Must not depend on Validation, Ordering, the Form Palette adapter, Workspace, Studio, React, React Flow, or a host application.
+- Never create a reverse or circular dependency to a consumer package.
 
 ## Boundaries
 
-- Resolve and query definitions; do not render or author them.
-- Provide primitives that validation, ordering, and workspace packages can consume.
-- Do not execute quantity expressions, customer-field validation expressions, or other ordering behavior.
-- Do not own publication diagnostics, editorial workflows, backend fulfillment, or visual fallback editing.
-- Mirror SDK service and capability definitions. Do not introduce `estimates`, canonical `flags`, or a replacement pricing model.
-- Treat `meta` as host-defined `Record<string, any>`.
+- Accept canonical v1 definitions only. Do not normalize legacy definitions or expose legacy aliases, adapters, deprecated fields, or compatibility modes.
+- Consume generated Spec bindings and preserve canonical `snake_case` serialization at wire boundaries.
+- Resolve definitions without rendering or authoring them.
+- Provide pure primitives that Validation, Ordering, and Workspace may consume.
+- Do not execute JavaScript expressions, calculate ordering utilities, construct `OrderSnapshot`, or validate customer input.
+- Do not own publication diagnostics, editorial state, final pricing, charges, fulfillment, or visual fallback editing.
+- Use `capabilities`; exclude `flags`, root capability booleans, and `estimates`.
+- Treat `meta` as opaque host-defined data and never assign `{raw, derived}` universal meaning.
+
+## Authority
+
+Ratified `dgp-spec` contracts control Core behavior. Use `dgp-sdk` only as evidence for backend concerns not yet ratified. A local Core type must never redefine the protocol.
 
 ## References
 
-- Legacy core source: `D:\Projects\GitHub\digital-service-ui-builder\src\core` and related framework-neutral utilities. Extract only interpretation behavior that belongs to Core.
-- Backend authority: sibling `../dgp-sdk` at `D:\Projects\GitHub\elqora\digital-goods-protocol\dgp-sdk`.
-- Studio destination: sibling `../dgp-studio`; code and history migration source: `D:\Projects\GitHub\service-builder`.
-- Sibling repositories: `../dgp-spec`, `../dgp-validation`, `../dgp-ordering`, `../dgp-ordering-form-palette`, `../dgp-workspace`, and `../dgp-studio`.
+- Spec authority: sibling `../dgp-spec`.
+- Backend evidence: sibling `../dgp-sdk`.
+- Legacy interpretation evidence: `D:\Projects\GitHub\digital-service-ui-builder\src\core`.
+- Studio source evidence: `D:\Projects\GitHub\service-builder`; destination: sibling `../dgp-studio`.
+- Siblings: `../dgp-validation`, `../dgp-ordering`, `../dgp-ordering-form-palette`, `../dgp-workspace`, and `../dgp-studio`.
+
+This repository remains GPL-3.0.
