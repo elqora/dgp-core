@@ -25,9 +25,9 @@ This repository is the deterministic, framework-neutral interpreter for canonica
 
 ## Authority
 
-Ratified `dgp-spec` contracts control Core behavior. Use `dgp-sdk` only as evidence for backend concerns not yet ratified. A local Core type must never redefine the protocol.
+Spec owns shared representation; SDK owns backend domain semantics; the legacy engine supplies interpretation evidence to retain or improve. Core owns deterministic interpretation within its boundary and must never redefine a shared contract locally.
 
-Ratified means the versioned schema, required fixtures, rationale, and stable status are merged into `dgp-spec/main`; released means that ratified Spec version is tagged and published. Core may implement a ratified unreleased contract, but a stable Core release requires the corresponding released Spec version.
+Ratified means the versioned plain TypeScript contract, required JSON fixtures, rationale, and stable status are merged into `dgp-spec/main`; generated JSON Schemas must also be current once tooling exists. Released means that ratified Spec version is tagged and published. Core may implement a ratified unreleased contract, but a stable Core release requires the corresponding released Spec version.
 
 ## Change workflow and operations
 
@@ -39,6 +39,7 @@ Ratified means the versioned schema, required fixtures, rationale, and stable st
 ## References
 
 - Spec authority: sibling `../dgp-spec`.
+- Shared-contract guide: sibling `../dgp-spec/CONTRACTS.md`.
 - Backend evidence: sibling `../dgp-sdk`.
 - Legacy interpretation evidence: `D:\Projects\GitHub\digital-service-ui-builder\src\core`.
 - Studio source evidence: `D:\Projects\GitHub\service-builder`; destination: sibling `../dgp-studio`.
