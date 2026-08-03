@@ -31,4 +31,4 @@ Repository scaffold only. Core extraction and migration will be planned separate
 
 ## License
 
-GPL-3.0.
+GPL-3.0-only.

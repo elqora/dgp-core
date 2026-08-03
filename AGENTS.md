@@ -27,6 +27,15 @@ This repository is the deterministic, framework-neutral interpreter for canonica
 
 Ratified `dgp-spec` contracts control Core behavior. Use `dgp-sdk` only as evidence for backend concerns not yet ratified. A local Core type must never redefine the protocol.
 
+Ratified means the versioned schema, required fixtures, rationale, and stable status are merged into `dgp-spec/main`; released means that ratified Spec version is tagged and published. Core may implement a ratified unreleased contract, but a stable Core release requires the corresponding released Spec version.
+
+## Change workflow and operations
+
+- Implement Core only after the relevant Spec contract is ratified; align Core alongside SDK conformance before dependent Validation, Ordering, or Workspace changes.
+- Commit and release this repository independently.
+- This repository has no implementation manifest or operational commands yet. Do not invent install, test, lint, type-check, build, or generation commands.
+- When its toolchain is introduced, document all real commands, supported runtimes, generated-output policy, completion criteria, and mechanical checks for forbidden dependencies, React imports, legacy fields, and generated-binding drift.
+
 ## References
 
 - Spec authority: sibling `../dgp-spec`.
@@ -35,4 +44,4 @@ Ratified `dgp-spec` contracts control Core behavior. Use `dgp-sdk` only as evide
 - Studio source evidence: `D:\Projects\GitHub\service-builder`; destination: sibling `../dgp-studio`.
 - Siblings: `../dgp-validation`, `../dgp-ordering`, `../dgp-ordering-form-palette`, `../dgp-workspace`, and `../dgp-studio`.
 
-This repository remains GPL-3.0.
+This repository remains GPL-3.0-only. Future manifests and source headers must use that exact SPDX identifier.
