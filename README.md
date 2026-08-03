@@ -1,18 +1,67 @@
 # DGP Core
 
-DGP Core is the framework-neutral interpreter for Digital Goods Protocol product definitions. It resolves product context, visibility, relationships, selections, service bindings, capabilities, and fallback behavior into deterministic runtime state.
+DGP Core is the framework-neutral interpreter for canonical Digital Goods Protocol product definitions. It resolves product context, visibility, relationships, selected-trigger effects, service bindings, capabilities, and fallback registrations into deterministic query results.
 
 DGP Core does not render interfaces, implement editorial workflows, or execute fulfillment. DGP Ordering handles customer orchestration, DGP Workspace supplies reusable editorial infrastructure, and the DGP SDK defines backend execution.
 
 ## Responsibilities
 
-- Product-definition normalization
-- Graph and relationship traversal
+- Deterministic product indexing
+- Cycle-safe graph, lineage, and relationship traversal
 - Context and visibility resolution
-- Option and value effects
+- Recursive option traversal and selected-trigger effect resolution
 - Service binding and capability resolution
-- Framework-neutral fallback resolution
-- Stable query and extension contracts
+- Node-first, then global fallback-candidate resolution
+- A composed, reusable product interpreter
+
+Core accepts canonical v1 definitions as-is. It does not repair or normalize legacy documents, validate publication coherence, mutate customer values, execute expressions, calculate utilities, or select an operational fallback service. Those concerns belong to their owning packages or the backend handler.
+
+## Install
+
+Node.js 22 or newer is required.
+
+```sh
+npm install @elqora/dgp-core @elqora/dgp-spec
+```
+
+## Usage
+
+```ts
+import { createProductInterpreter } from "@elqora/dgp-core";
+
+const product = createProductInterpreter(definition);
+const context = product.resolveContext("checkout", selectedTriggerIds);
+
+context?.visibility.fieldIds;
+context?.capabilities.values;
+```
+
+Public functions are pure with respect to the supplied definition. Returned collections are newly allocated unless explicitly documented as canonical source nodes.
+
+## Interpretation rules
+
+- Filter lineage is returned root-first and traversal terminates safely if a malformed cycle is encountered.
+- Fields bound to the active filter or an ancestor are visible. Only the active filter's direct `includes` and `excludes` apply.
+- Selected field-button and option triggers apply only when their owning field belongs to the active lineage.
+- A nearer trigger overrides an ancestor trigger; at equal depth, exclusion wins.
+- `order_for_tags` pins visible fields first without introducing hidden fields.
+- Ancestor capability requirements take precedence over conflicting descendant declarations, and their origin filter is reported without modifying the document.
+- Option effects may reveal a field and narrow its recursively indexed options. Value effects are returned as declarations for Ordering to apply.
+- Fallback registrations are listed node-first and then by the primary service's global list, with duplicates and self-references removed. Backend policy still decides operational eligibility.
+
+## Development
+
+```sh
+npm install
+npm run lint
+npm run typecheck
+npm test
+npm run check:boundaries
+npm run build
+npm run check
+```
+
+`npm run check` is the repository completion command. It runs linting, strict type checking, tests, dependency/source boundary checks, and the distributable build. Build output in `dist/` is generated and is not committed.
 
 ## Ecosystem
 
@@ -27,7 +76,7 @@ DGP Core does not render interfaces, implement editorial workflows, or execute f
 
 ## Status
 
-Repository scaffold only. Core extraction and migration will be planned separately.
+The initial DGP v1 interpretation slice is implemented against `@elqora/dgp-spec` 1.x.
 
 ## License
 
