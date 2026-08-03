@@ -9,7 +9,7 @@ This repository is the framework-neutral product-definition interpreter. Its beh
 ## Dependencies
 
 - May depend on sibling `dgp-spec`.
-- Must not depend on `dgp-validation`, `dgp-ordering`, `dgp-workspace`, React, React Flow, Studio, or a host application.
+- Must not depend on `dgp-validation`, `dgp-ordering`, `dgp-ordering-form-palette`, `dgp-workspace`, Form Palette, React, React Flow, Studio, or a host application.
 
 ## Boundaries
 
@@ -25,4 +25,4 @@ This repository is the framework-neutral product-definition interpreter. Its beh
 - Legacy core source: `D:\Projects\GitHub\digital-service-ui-builder\src\core` and related framework-neutral utilities. Extract only interpretation behavior that belongs to Core.
 - Backend authority: sibling `../dgp-sdk` at `D:\Projects\GitHub\elqora\digital-goods-protocol\dgp-sdk`.
 - Studio destination: sibling `../dgp-studio`; code and history migration source: `D:\Projects\GitHub\service-builder`.
-- Sibling repositories: `../dgp-spec`, `../dgp-validation`, `../dgp-ordering`, `../dgp-workspace`, and `../dgp-studio`.
+- Sibling repositories: `../dgp-spec`, `../dgp-validation`, `../dgp-ordering`, `../dgp-ordering-form-palette`, `../dgp-workspace`, and `../dgp-studio`.

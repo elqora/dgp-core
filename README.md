@@ -19,6 +19,7 @@ DGP Core does not render interfaces, implement editorial workflows, or execute f
 - [DGP Spec](https://github.com/elqora/dgp-spec) owns canonical contracts.
 - [DGP Validation](https://github.com/elqora/dgp-validation) validates definitions for ingestion and publication.
 - [DGP Ordering](https://github.com/elqora/dgp-ordering) orchestrates customer ordering flows.
+- [DGP Ordering Form Palette](https://github.com/elqora/dgp-ordering-form-palette) provides the optional Form Palette integration.
 - [DGP Workspace](https://github.com/elqora/dgp-workspace) provides reusable editorial infrastructure.
 - [DGP Studio](https://github.com/elqora/dgp-studio) provides visual authoring, testing, and publication UX.
 - [DGP SDK](https://github.com/elqora/dgp-sdk) defines backend handler and fulfillment contracts.
