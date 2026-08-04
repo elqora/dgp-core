@@ -4,7 +4,7 @@ Read and follow `../AGENTS.md` before working in this repository.
 
 ## Role
 
-This repository is the deterministic, framework-neutral interpreter for canonical DGP `ProductDefinition` documents. It resolves and queries context, visibility, relationships, service bindings, capabilities, option effects, and fallback behavior.
+This repository is the complete deterministic, framework-neutral product engine for canonical DGP `ProductDefinition` documents. It provides pure interpretation primitives and a canonical stateful Builder facade over definition state, normalization, indexing, graph projection, save preparation, context, visibility, relationships, service bindings, capabilities, effects, and fallbacks.
 
 ## Dependencies
 
@@ -14,12 +14,16 @@ This repository is the deterministic, framework-neutral interpreter for canonica
 
 ## Boundaries
 
-- Accept canonical v1 definitions only. Do not normalize legacy definitions or expose legacy aliases, adapters, deprecated fields, or compatibility modes.
+- Accept canonical v1 definitions only. Do not normalize legacy definitions or expose legacy aliases, adapters, deprecated fields, or compatibility modes. This prohibition does not remove canonical authoring normalization.
 - Consume generated Spec bindings and preserve canonical `snake_case` serialization at wire boundaries.
-- Resolve definitions without rendering or authoring them.
-- Provide pure primitives that Validation, Ordering, and Workspace may consume.
+- Supply framework-neutral authoring engine primitives without rendering UI or owning editorial sessions, history, persistence, or collaboration.
+- Provide pure primitives plus a canonical stateful Builder facade that Validation, Ordering, and Workspace may consume.
+- The Builder must hold and replace canonical definition state, build and refresh `ProductIndex`, expose node identity and lookup, project framework-neutral graph snapshots, compose existing resolvers, and prepare deterministic canonical save output.
+- Apply canonical normalization at authoring boundaries only. Preserve canonical defaults, deduplicated collections and bindings, root/filter invariants, recursive options, validation declarations, notices, fallbacks, effects, and cleanup. Externally supplied published definitions remain strictly validated and must not be silently repaired.
+- Resolve derived capability or constraint state without writing it into canonical definitions where ratified, while preserving effective values and origin behavior.
+- Treat `ProductIndex` as the evolved legacy `NodeMap`. Preserve actual-ID lookup, recursive-option ownership, deterministic identity, and trigger resolution while retaining lineage, descendants, relationship, and binding queries.
 - Do not execute JavaScript expressions, calculate ordering utilities, construct `OrderSnapshot`, or validate customer input.
-- Do not own publication diagnostics, editorial state, final pricing, charges, fulfillment, or visual fallback editing.
+- Do not own publication diagnostics, editorial history, final pricing, charges, fulfillment, or visual fallback editing. Legacy `Builder.errors()` behavior is composed by Workspace through Validation; Core must not import Validation.
 - Use `capabilities`; exclude `flags`, root capability booleans, and `estimates`.
 - Treat `meta` as opaque host-defined data and never assign `{raw, derived}` universal meaning.
 
@@ -31,10 +35,10 @@ Ratified means the versioned plain TypeScript contract, required JSON fixtures, 
 
 ## Migration completeness
 
-- Exhaustively inventory legacy context, lineage, relationships, visibility, recursive options, effects, capabilities, service bindings, service filtering, and fallback interpretation and map each behavior in `MIGRATION.md`.
-- Accepting canonical v1 definitions removes legacy normalization and aliases; it does not permit a reduced interpreter.
+- Exhaustively inventory the legacy Builder, normalizer, NodeMap, context, lineage, relationships, visibility, recursive options, effects, capabilities, graph projection, save cleanup, service bindings, service filtering, and fallback interpretation in `MIGRATION.md`.
+- Accepting canonical v1 definitions removes legacy aliases and compatibility coercion; it does not permit omission of canonical normalization, Builder behavior, graph projection, save preparation, or interpretation.
 - Preserve observable interpretation outcomes by default. Internal algorithms may improve, but redesign or retirement requires explicit recorded user approval.
-- Port or replace the applicable legacy tests, including conflicting-trigger, recursive-option, malformed-graph, and contextual edge cases.
+- Port or replace every applicable Builder, normalizer, NodeMap, conflicting-trigger, recursive-option, malformed-graph, cleanup, and contextual test. Cross-package tests must prove the replacement of `Builder.errors()` through Workspace and Validation.
 - Mark unimplemented behavior as **pending migration**. Do not call Core migration-complete or publish another stable release based only on pure APIs, compilation, boundary checks, or a happy-path suite.
 
 ## Change workflow and operations
@@ -53,7 +57,7 @@ Ratified means the versioned plain TypeScript contract, required JSON fixtures, 
 - Spec authority: sibling `../dgp-spec`.
 - Shared-contract guide: sibling `../dgp-spec/CONTRACTS.md`.
 - Backend evidence: sibling `../dgp-sdk`.
-- Legacy interpretation evidence: `D:\Projects\GitHub\digital-service-ui-builder\src\core`.
+- Legacy interpretation evidence: `D:\Projects\GitHub\digital-service-ui-builder\src\core`, especially `builder.ts`, `normalise.ts`, `node-map.ts`, and their tests.
 - Studio source evidence: `D:\Projects\GitHub\service-builder`; destination: sibling `../dgp-studio`.
 - Siblings: `../dgp-validation`, `../dgp-ordering`, `../dgp-ordering-form-palette`, `../dgp-workspace`, and `../dgp-studio`.
 
