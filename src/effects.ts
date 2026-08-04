@@ -18,7 +18,12 @@ export function resolveValueEffectsWithIndex(
   selectedTriggerIds: Iterable<string>,
 ): ResolvedValueEffect[] {
   const effects: ResolvedValueEffect[] = [];
-  for (const triggerId of relevantSelectedTriggers(index, filterId, selectedTriggerIds)) {
+  // The active filter is an implicit value-effect trigger. Ancestors are context only.
+  const triggerIds = [
+    ...(index.getFilter(filterId) === undefined ? [] : [filterId]),
+    ...relevantSelectedTriggers(index, filterId, selectedTriggerIds),
+  ];
+  for (const triggerId of triggerIds) {
     for (const [targetFieldId, effect] of Object.entries(
       definition.value_effects_for_triggers[triggerId] ?? {},
     )) {

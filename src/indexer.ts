@@ -2,7 +2,7 @@
 
 import type { FieldOption, ProductDefinition, ProductField, ProductFilter } from "@elqora/dgp-spec";
 
-import { walkFieldOptions } from "./options.js";
+import { walkFieldOptions, type OptionVisit } from "./options.js";
 
 export type ProductNodeKind = "filter" | "field" | "option" | "unknown";
 
@@ -14,6 +14,20 @@ export type IndexedProductNode =
   | { kind: "option"; id: string; option: FieldOption; field: ProductField }
   | { kind: "unknown"; id: string };
 
+export type ResolvedTrigger =
+  | { kind: "filter"; id: string; triggerId: string; filter: ProductFilter }
+  | { kind: "button"; id: string; triggerId: string; field: ProductField; filterIds: string[] }
+  | {
+      kind: "option";
+      id: string;
+      triggerId: string;
+      option: FieldOption;
+      field: ProductField;
+      filterIds: string[];
+      ancestors: FieldOption[];
+    }
+  | { kind: "unknown"; id: string; triggerId: string };
+
 export interface ProductIndex {
   readonly definition: ProductDefinition;
   getNode(id: string): IndexedProductNode;
@@ -21,6 +35,13 @@ export interface ProductIndex {
   getField(id: string): ProductField | undefined;
   getOption(id: string): FieldOption | undefined;
   getOptionOwner(id: string): ProductField | undefined;
+  getOptionVisit(id: string): OptionVisit | undefined;
+  optionAncestors(id: string): FieldOption[];
+  optionDescendants(id: string): FieldOption[];
+  nodeIds(): string[];
+  triggerIds(): string[];
+  resolveTrigger(id: string): ResolvedTrigger;
+  rootFilters(): ProductFilter[];
   filterLineage(id: string): ProductFilter[];
   filterChildren(id: string): ProductFilter[];
   filterDescendants(id: string): ProductFilter[];
@@ -33,7 +54,7 @@ export interface ProductIndex {
 export function createProductIndex(definition: ProductDefinition): ProductIndex {
   const filters = new Map<string, ProductFilter>();
   const fields = new Map<string, ProductField>();
-  const options = new Map<string, { option: FieldOption; field: ProductField }>();
+  const options = new Map<string, { option: FieldOption; field: ProductField; visit: OptionVisit }>();
   const children = new Map<string, ProductFilter[]>();
 
   for (const filter of definition.filters) {
@@ -43,7 +64,7 @@ export function createProductIndex(definition: ProductDefinition): ProductIndex 
     if (!fields.has(field.id)) fields.set(field.id, field);
     for (const visit of walkFieldOptions(field)) {
       if (!options.has(visit.optionId)) {
-        options.set(visit.optionId, { option: visit.option, field });
+        options.set(visit.optionId, { option: visit.option, field, visit });
       }
     }
   }
@@ -121,6 +142,82 @@ export function createProductIndex(definition: ProductDefinition): ProductIndex 
     },
     getOptionOwner(id) {
       return options.get(id)?.field;
+    },
+    getOptionVisit(id) {
+      return options.get(id)?.visit;
+    },
+    optionAncestors(id) {
+      const result: FieldOption[] = [];
+      const seen = new Set<string>();
+      let current = options.get(id)?.visit;
+      while (current?.parentId !== undefined && !seen.has(current.parentId)) {
+        seen.add(current.parentId);
+        const parent = options.get(current.parentId);
+        if (parent === undefined) break;
+        result.unshift(parent.option);
+        current = parent.visit;
+      }
+      return result;
+    },
+    optionDescendants(id) {
+      const root = options.get(id);
+      if (root === undefined) return [];
+      const result: FieldOption[] = [];
+      const queue = [...(root.option.children ?? [])];
+      const seen = new Set<string>([id]);
+      while (queue.length > 0) {
+        const option = queue.shift();
+        if (option === undefined || seen.has(option.id)) continue;
+        seen.add(option.id);
+        result.push(option);
+        queue.push(...(option.children ?? []));
+      }
+      return result;
+    },
+    nodeIds() {
+      return [...filters.keys(), ...fields.keys(), ...options.keys()];
+    },
+    triggerIds() {
+      return [
+        ...[...fields.values()].filter((field) => field.button === true).map((field) => field.id),
+        ...options.keys(),
+      ];
+    },
+    resolveTrigger(id) {
+      const filter = filters.get(id);
+      if (filter !== undefined) return { kind: "filter", id, triggerId: id, filter };
+      const field = fields.get(id);
+      if (field?.button === true) {
+        return { kind: "button", id, triggerId: id, field, filterIds: fieldBindIds(field) };
+      }
+      const hit = options.get(id);
+      if (hit !== undefined) {
+        const ancestors: FieldOption[] = [];
+        const seen = new Set<string>();
+        let visit: OptionVisit | undefined = hit.visit;
+        while (visit.parentId !== undefined && !seen.has(visit.parentId)) {
+          seen.add(visit.parentId);
+          const parent = options.get(visit.parentId);
+          if (parent === undefined) break;
+          ancestors.unshift(parent.option);
+          visit = parent.visit;
+        }
+        return {
+          kind: "option",
+          id,
+          triggerId: id,
+          option: hit.option,
+          field: hit.field,
+          filterIds: fieldBindIds(hit.field),
+          ancestors,
+        };
+      }
+      return { kind: "unknown", id, triggerId: id };
+    },
+    rootFilters() {
+      return definition.filters.filter(
+        (filter) => filter.bind_id === undefined || !filters.has(filter.bind_id),
+      );
     },
     filterLineage,
     filterChildren(id) {
