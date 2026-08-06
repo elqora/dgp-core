@@ -30,6 +30,8 @@ describe("handler service identity and filtering", () => {
     expect(serviceRateMatchesPolicy(1, 10, { kind: "within_pct", pct: 5 })).toBe(true);
     expect(serviceRateMatchesPolicy(9, 10, { kind: "at_least_pct_lower", pct: 10 })).toBe(true);
     expect(serviceRateMatchesPolicy(9.01, 10, { kind: "at_least_pct_lower", pct: 10 })).toBe(false);
+    expect(serviceRateMatchesPolicy(999, undefined, { kind: "eq_primary" })).toBe(true);
+    expect(serviceRateMatchesPolicy(10, null, { kind: "eq_primary" })).toBe(false);
     expect(serviceRateMatchesPolicy(null, 10, { kind: "eq_primary" })).toBe(false);
     expect(serviceRateMatchesPolicy(null, null, undefined)).toBe(true);
   });
@@ -136,5 +138,28 @@ describe("service binding and fallback interpretation", () => {
         matching_filter_ids: [],
       },
     ]);
+  });
+
+  it("accepts caller-resolved relationship contexts for fallback eligibility", () => {
+    const source = definition();
+    delete source.fields[1]!.bind_id;
+    source.filters[0]!.includes = ["choice"];
+    const services = [
+      handlerService(303, 10),
+      handlerService(304, 10, {
+        capabilities: {
+          refill: { id: "refill", enabled: false, description: null, meta: {} },
+        },
+      }),
+    ];
+    expect(resolveFallbackEligibilityForNode(
+      createProductIndex(source), "option", [304], services,
+      { require_capability_fit: true, filter_ids: ["a"] },
+    )).toEqual([{
+      candidate: 304,
+      eligible: false,
+      reasons: ["capability_mismatch"],
+      matching_filter_ids: [],
+    }]);
   });
 });

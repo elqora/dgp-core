@@ -47,6 +47,7 @@ export interface ProductIndex {
   filterDescendants(id: string): ProductFilter[];
   relationBetweenFilters(baseId: string, otherId: string): FilterRelation;
   fieldBindIds(fieldOrId: ProductField | string): string[];
+  /** Direct authored bind contexts only; relationship/effect reachability requires visibility resolution. */
   nodeFilterIds(nodeId: string): string[];
   isFieldBoundWithin(fieldOrId: ProductField | string, filterId: string): boolean;
 }

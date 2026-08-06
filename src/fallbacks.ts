@@ -27,6 +27,8 @@ export interface ResolveFallbackEligibilityOptions {
   rate_policy?: ServiceRatePolicy;
   require_capability_fit?: boolean;
   exclude_ids?: Iterable<ServiceId>;
+  /** Reachable publication contexts supplied by a caller that resolves relationship visibility. */
+  filter_ids?: readonly string[];
 }
 
 /**
@@ -42,7 +44,9 @@ export function resolveFallbackEligibilityForNode(
 ): FallbackEligibilityRow[] {
   const primaryId = serviceBindingForNode(index, nodeId);
   const primary = primaryId === undefined ? undefined : findService(services, primaryId);
-  const filterIds = index.nodeFilterIds(nodeId);
+  const filterIds = options.filter_ids === undefined
+    ? index.nodeFilterIds(nodeId)
+    : [...new Set(options.filter_ids)];
   const excluded = new Set([...options.exclude_ids ?? []].map(String));
   const seen = new Set<string>();
   const rows: FallbackEligibilityRow[] = [];

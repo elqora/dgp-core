@@ -28,7 +28,8 @@ export function serviceRateMatchesPolicy(
   policy: ServiceRatePolicy | undefined,
 ): boolean {
   if (policy === undefined) return true;
-  if (primaryRate === undefined || primaryRate === null || candidateRate === null) return false;
+  if (primaryRate === undefined) return true;
+  if (primaryRate === null || candidateRate === null) return false;
   switch (policy.kind) {
     case "eq_primary":
       return candidateRate === primaryRate;

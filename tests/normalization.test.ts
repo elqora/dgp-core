@@ -175,7 +175,7 @@ describe("deterministic save preparation", () => {
     expect(result.filters[0]?.excludes).toBeUndefined();
   });
 
-  it("prunes fallback scopes without primaries, self aliases, and duplicates", () => {
+  it("prunes node scopes without primaries but preserves catalog-wide global scopes", () => {
     const result = prepareProductDefinitionForSave(emptyDefinition({
       filters: [{ id: "root", label: "Root", service_id: 101 }],
       fields: [{ id: "button", type: "button", label: "Button", button: true, service_id: "202" }],
@@ -184,6 +184,9 @@ describe("deterministic save preparation", () => {
         global: { "101": [101, 103, "103"], "999": [8] },
       },
     }));
-    expect(result.fallbacks).toEqual({ nodes: { root: [102] }, global: { "101": [103] } });
+    expect(result.fallbacks).toEqual({
+      nodes: { root: [102] },
+      global: { "101": [103], "999": [8] },
+    });
   });
 });

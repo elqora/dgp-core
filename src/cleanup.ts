@@ -51,11 +51,6 @@ function pruneFallbacks(
   if (definition.fallbacks === null) return null;
   const nodes: Record<string, ServiceId[]> = {};
   const global: Record<string, ServiceId[]> = {};
-  const usedPrimaryKeys = new Set<string>();
-  for (const nodeId of index.nodeIds()) {
-    const primary = serviceBindingForNode(index, nodeId);
-    if (primary !== undefined) usedPrimaryKeys.add(String(primary));
-  }
   for (const [nodeId, candidates] of Object.entries(definition.fallbacks.nodes ?? {})) {
     const primary = serviceBindingForNode(index, nodeId);
     if (primary === undefined) continue;
@@ -69,7 +64,6 @@ function pruneFallbacks(
     if (next.length > 0) nodes[nodeId] = next;
   }
   for (const [primary, candidates] of Object.entries(definition.fallbacks.global ?? {})) {
-    if (!usedPrimaryKeys.has(primary)) continue;
     const seen = new Set<string>([primary]);
     const next = candidates.filter((candidate) => {
       const key = String(candidate);
