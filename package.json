@@ -42,7 +42,7 @@
     "prepack": "npm run check"
   },
   "dependencies": {
-    "@elqora/dgp-spec": "github:elqora/dgp-spec#de710c0"
+    "@elqora/dgp-spec": "^1.5.0"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

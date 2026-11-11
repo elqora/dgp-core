@@ -118,6 +118,26 @@ describe("canonical authoring normalization", () => {
     expect(result.fields[0]?.meta).toEqual({ multi: false, variant: "ignored", nested: { x: 1 } });
     expect(source).toEqual(before);
   });
+
+  it("preserves visibility expressions on fields and recursive options through normalization and save", () => {
+    const expression = { language: "javascript" as const, body: "return preview.service_context.length > 0;" };
+    const source = emptyDefinition({
+      fields: [{
+        id: "f",
+        type: "select",
+        label: "F",
+        visibility_expression: expression,
+        options: [{ id: "parent", label: "Parent", visibility_expression: expression, children: [{ id: "child", label: "Child", visibility_expression: expression }] }],
+      }],
+    });
+    const normalized = normalizeProductDefinition(source);
+    const saved = prepareProductDefinitionForSave(source);
+    for (const result of [normalized, saved]) {
+      expect(result.fields[0]?.visibility_expression).toEqual(expression);
+      expect(result.fields[0]?.options?.[0]?.visibility_expression).toEqual(expression);
+      expect(result.fields[0]?.options?.[0]?.children?.[0]?.visibility_expression).toEqual(expression);
+    }
+  });
 });
 
 describe("deterministic save preparation", () => {
